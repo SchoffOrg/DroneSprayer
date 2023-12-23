@@ -2,6 +2,8 @@ FROM ubuntu:20.04
 WORKDIR /ardupilot
 
 ARG DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 ARG USER_NAME=ardupilot
 ARG USER_UID=1000
 ARG USER_GID=1000
@@ -47,6 +49,15 @@ RUN export ARDUPILOT_ENTRYPOINT="/home/${USER_NAME}/ardupilot_entrypoint.sh" \
 
 # Set the buildlogs directory into /tmp as other directory aren't accessible
 ENV BUILDLOGS=/tmp/buildlogs
+
+RUN sudo apt-get update && sudo apt-get install -y libsfml-dev \
+ libgtk-3-dev libjpeg-dev libtiff-dev \
+ libsdl2-dev libgstreamer-plugins-base1.0-dev \
+ libnotify-dev freeglut3 freeglut3-dev libsm-dev \
+ libwebkit2gtk-4.0-dev libxtst-dev
+
+RUN pip install wxPython opencv-python
+RUN pip install matplotlib
 
 # Cleanup
 RUN sudo apt-get clean \
